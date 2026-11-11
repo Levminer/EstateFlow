@@ -1,8 +1,5 @@
 using EstateFlow.Application;
-using EstateFlow.Application.Services;
-using EstateFlow.Infrastructure.Data;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+using EstateFlow.Infrastructure;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,21 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
 {
+    // A .NET 10 alapból OpenAPI 3.1-et generál - a szélesebb eszköztámogatás miatt 3.0-t kérünk
     options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
 });
 
-
-builder.Services.AddDbContext<EstateFlowDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("EstateFlowDbConnection")));
-
-// Az interfészt kérő osztályok ugyanazt a scoped DbContext példányt kapják
-builder.Services.AddScoped<IApplicationDbContext>(provider =>
-    provider.GetRequiredService<EstateFlowDbContext>());
-
-// Az összes validátor felderítése és regisztrálása a DI konténerbe (scoped életciklussal)
-builder.Services.AddValidatorsFromAssemblyContaining<IApplicationDbContext>();
-
-builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
+// A rétegek szolgáltatásait a saját extension metódusuk regisztrálja
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
