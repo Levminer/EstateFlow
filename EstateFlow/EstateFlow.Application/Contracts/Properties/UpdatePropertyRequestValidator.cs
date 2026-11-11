@@ -1,12 +1,12 @@
-﻿using EstateFlow.Infrastructure.Data;
+﻿using EstateFlow.Application;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace EstateFlow.Server.Contracts.Properties
+namespace EstateFlow.Application.Contracts.Properties
 {
     public class UpdatePropertyRequestValidator : AbstractValidator<UpdatePropertyRequest>
     {
-        public UpdatePropertyRequestValidator(EstateFlowDbContext context)
+        public UpdatePropertyRequestValidator(IApplicationDbContext context)
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
